@@ -8,8 +8,13 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setNewTodos(tasks.push(newTodos));
+    if (newTodos === "") return;
+    setTasks([...tasks, newTodos]); 
     setNewTodos("");
+  };
+
+  const handleDelete = (index) => {
+    setTasks(tasks.filter((_, i) => i !== index));
   };
 
   return (
@@ -24,11 +29,11 @@ function App() {
           </form>  
         </div> 
         <div className='task'>
-          {tasks.map((task) => (
-          <div className='list'>
-            <span>{task}</span>
-            <button>delete</button>
-          </div>
+          {tasks.map((task, index) => (
+            <div className='list' key={index}>
+              <span>{task}</span>
+              <button onClick={() => handleDelete(index)}>delete</button>
+            </div>
           ))}
         </div>
       </section>
