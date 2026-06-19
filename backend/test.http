@@ -1,0 +1,7 @@
+@hostname = http://localhost:5001/
+
+GET {{hostname}}
+
+###
+GET http://localhost:5001/todos/1
+
