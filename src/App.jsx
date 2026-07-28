@@ -1,41 +1,59 @@
 import './App.css'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import PersonForm from './components/PersonForm';
+import Todo from './components/Todo';
+import todoService from "./services/todos";
 
 function App() {
 
-  const [tasks, setTasks] = useState([]);
+  const [todos, setTodos] = useState([]);
   const [newTodos, setNewTodos] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (newTodos === "") return;
-    setTasks([...tasks, newTodos]); 
-    setNewTodos("");
-  };
+  useEffect(() => {
+    todoService.getAll()
+      .then((todos) => {
+        setTodos(todos);
+      })
+      .catch(error => {
+        console.error("Error fetching todos:", error);
+      });
+  }, []);
 
-  const handleDelete = (index) => {
-    setTasks(tasks.filter((_, i) => i !== index));
-  };
+  const addTodo = () => {
+
+    const todoObject = {
+      text: newTodos,
+    };
+
+    todoService.create(todoObject)
+      .then(response => {
+        setTodos(todos.concat(response));
+        setNewTodos("");
+      })
+      .catch(error => {
+        console.error("Error adding todo:", error);
+      });
+
+  }
+
+  const deleteTodo = (index) => { 
+    todoService.remove(index)
+      .then(() => {
+        setTodos(todos.filter((_, i) => i !== index));
+      })
+      .catch(error => {
+        console.error("Error deleting todo:", error);
+      });
+  }
 
   return (
     <>
       <section className='container'>
         <div className='heading'>
           <h1 className='title'>My To-Do List</h1>
-          <form className='input' onSubmit={handleSubmit}>
-            <input type="text" placeholder='New task' value={newTodos} 
-            onChange={(e) => setNewTodos(e.target.value)} />
-            <button type='submit'>Add</button>
-          </form>  
+           <PersonForm addTodo={addTodo} newTodos={newTodos} setNewTodos={setNewTodos} />
         </div> 
-        <div className='task'>
-          {tasks.map((task, index) => (
-            <div className='list' key={index}>
-              <span>{task}</span>
-              <button onClick={() => handleDelete(index)}>delete</button>
-            </div>
-          ))}
-        </div>
+        <Todo todos={todos} deleteTodos={deleteTodo} />
       </section>
     </>
   )
