@@ -36,12 +36,6 @@ app.get("/todos/:id", (req, res) => {
     res.json(todo);
 });
 
-// app.post("/todos", (req, res) => {
-//     const { text, done } = req.body;    
-
-
-// })
-
 
 app.listen(5001, () => {
     console.log("Server running on port 5001");
